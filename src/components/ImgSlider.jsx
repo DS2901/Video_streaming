@@ -1,4 +1,3 @@
-import styled from "styled-components";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
@@ -6,106 +5,72 @@ import Slider from "react-slick";
 const ImgSlider = (props) => {
   let settings = {
     dots: true,
+    arrows: true,
     infinite: true,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    autoplay: true,
+    autoplay: false, // Disable autoplay so videos don't conflict
+    centerMode: true,
+    centerPadding: "60px",
   };
+
+  const handleMouseEnter = (e) => {
+    const video = e.currentTarget.querySelector("video");
+    if (video) {
+      video.play();
+    }
+  };
+
+  const handleMouseLeave = (e) => {
+    const video = e.currentTarget.querySelector("video");
+    if (video) {
+      video.pause();
+      video.currentTime = 0;
+    }
+  };
+
   return (
-    <Carousel {...settings}>
-      <Wrap>
-        <a>
-          <img src="/images/slider-badging.jpg" alt="" />
-        </a>
-      </Wrap>
+    <Slider className="imgslider-carousel" {...settings}>
+      <div className="imgslider-wrap" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        <div className="slider-content">
+          <img src="/images/slider-badging.jpg" alt="Disney" />
+          <video loop playsInline muted>
+            <source src="/videos/1564674844-disney.mp4" type="video/mp4" />
+          </video>
+        </div>
+      </div>
 
-      <Wrap>
-        <a>
-          <img src="/images/slider-scale.jpg" alt="" />
-        </a>
-      </Wrap>
+      <div className="imgslider-wrap" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        <div className="slider-content">
+          <img src="/images/slider-scale.jpg" alt="Marvel" />
+          <video loop playsInline muted>
+             <source src="/videos/1564676115-marvel.mp4" type="video/mp4" />
+          </video>
+        </div>
+      </div>
 
-      <Wrap>
-        <a>
-          <img src="/images/slider-badag.jpg" alt="" />
-        </a>
-      </Wrap>
+      <div className="imgslider-wrap" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        <div className="slider-content">
+          <img src="/images/slider-badag.jpg" alt="Pixar" />
+          <video loop playsInline muted>
+            <source src="/videos/1564676714-pixar.mp4" type="video/mp4" />
+          </video>
+        </div>
+      </div>
 
-      <Wrap>
-        <a>
-          <img src="/images/slider-scales.jpg" alt="" />
-        </a>
-      </Wrap>
-    </Carousel>
+      <div className="imgslider-wrap" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        <div className="slider-content">
+          <img src="/images/slider-scales.jpg" alt="Star Wars" />
+          <video loop playsInline muted>
+            <source src="/videos/1608229455-star-wars.mp4" type="video/mp4" />
+          </video>
+        </div>
+      </div>
+    </Slider>
   );
 };
 
-const Carousel = styled(Slider)`
-  margin-top: 20px;
-
-  & > button {
-    opacity: 0;
-    height: 100%;
-    width: 5vw;
-    z-index: 1;
-
-    &:hover {
-      opacity: 1;
-      transition: opacity 0.2s ease 0s;
-    }
-  }
-
-  ul li button {
-    &:before {
-      font-size: 10px;
-      color: rgb(150, 158, 171);
-    }
-  }
-
-  li.slick-active button:before {
-    color: white;
-  }
-
-  .slick-list {
-    overflow: initial;
-  }
-
-  .slick-prev {
-    left: -75px;
-  }
-
-  .slick-next {
-    right: -75px;
-  }
-`;
-
-const Wrap = styled.div`
-  border-radius: 4px;
-  cursor: pointer;
-  position: relative;
-
-  a {
-    border-radius: 4px;
-    box-shadow:
-      rgb(0 0 0 / 69%) 0px 26px 30px -10px,
-      rgb(0 0 0 / 73%) 0px 16px 10px -10px;
-    cursor: pointer;
-    display: block;
-    position: relative;
-    padding: 4px;
-
-    img {
-      width: 100%;
-      height: 100%;
-    }
-
-    &:hover {
-      padding: 0;
-      border: 4px solid rgba(249, 249, 249, 0.8);
-      transition-duration: 300ms;
-    }
-  }
-`;
+// Styles for the slider are defined in src/Developer.css under .imgslider-* classes
 
 export default ImgSlider;

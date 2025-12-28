@@ -1,23 +1,32 @@
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./components/Login";
-import Header from "./components/Header";
-import "./App.css";
+import Signup from "./components/Signup";
+import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword";
 
 import Home from "./components/Home";
 import Detail from "./components/Detail";
+import Profile from "./components/Profile";
+import Settings from "./components/Settings";
+
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
     <div className="App">
       <Router>
-        <Header />
-        
-        <Switch>
-          <Route exact path="/"><Login /></Route>
-          <Route exact path="/home"><Home/></Route>
-          
-          <Route path="/detail/:id"><Detail/></Route>
-        </Switch>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/detail/:id" element={<Detail />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/settings" element={<Settings />} />
+          </Route>
+        </Routes>
       </Router>
     </div>
   );

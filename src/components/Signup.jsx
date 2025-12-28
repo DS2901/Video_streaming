@@ -1,14 +1,16 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../Developer.css";
-import authService from "../services/authServices";
 import Toast from "./Toast";
+import auth from "../services/authServices.js";
 
-const Login = () => {
+const Signup = () => {
   const navigate = useNavigate();
+  const [toast, setToast] = useState({ message: "", variant: "info" });
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [toast, setToast] = useState({ message: "", variant: "info" });
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isValidEmail = useMemo(() => {
@@ -18,33 +20,39 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!name.trim()) {
+      setToast({ message: "Name is required", variant: "error" });
+      return;
+    }
+
     if (!isValidEmail(email)) {
       setToast({ message: "Please enter a valid email", variant: "error" });
       return;
     }
 
-    if (!password) {
-      setToast({ message: "Password is required", variant: "error" });
+    if (password.length < 6) {
+      setToast({ message: "Password must be at least 6 characters", variant: "error" });
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setToast({ message: "Passwords do not match", variant: "error" });
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const res = await authService.login(email.trim(), password);
-      const token = res.token || res.data?.token;
-      
-      if (token) {
-        localStorage.setItem("token", token);
-        setToast({ message: "Login successful", variant: "success" });
-        setTimeout(() => navigate("/home"), 600);
-      } else {
-        throw new Error("Token not found in response");
-      }
+      const res = await auth.signup(name.trim(), email.trim(), password, confirmPassword);
+      setToast({
+        message: res?.message || "Account created. Please login.",
+        variant: "success",
+      });
+      setTimeout(() => navigate("/"), 700);
     } catch (err) {
       const message =
         err?.response?.data?.message ||
         err?.message ||
-        "Login failed. Please try again.";
+        "Signup failed. Please try again.";
       setToast({ message, variant: "error" });
     } finally {
       setIsSubmitting(false);
@@ -65,20 +73,26 @@ const Login = () => {
             alt="Disney+"
             className="login-logo-one"
           />
-          
+
           <form className="login-form" onSubmit={handleSubmit}>
+            <div className="input-box">
+              <input
+                type="text"
+                required
+                placeholder=" "
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <label>Name</label>
+            </div>
+
             <div className="input-box">
               <input
                 type="email"
                 required
                 placeholder=" "
                 value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  if (toast.variant === "error") {
-                    setToast({ message: "", variant: "info" });
-                  }
-                }}
+                onChange={(e) => setEmail(e.target.value)}
               />
               <label>Email</label>
             </div>
@@ -89,39 +103,29 @@ const Login = () => {
                 required
                 placeholder=" "
                 value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  if (toast.variant === "error") {
-                    setToast({ message: "", variant: "info" });
-                  }
-                }}
+                onChange={(e) => setPassword(e.target.value)}
               />
               <label>Password</label>
             </div>
 
+            <div className="input-box">
+              <input
+                type="password"
+                required
+                placeholder=" "
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+              <label>Confirm Password</label>
+            </div>
+
             <button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Signing in..." : "Login"}
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                className="button-arrow"
-              >
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
+              {isSubmitting ? "Creating..." : "Create Account"}
             </button>
 
-            <div className="auth-links auth-links-split">
+            <div className="auth-links">
               <span className="auth-links-text">
-                <Link to="/forgot-password">Forgot password?</Link>
-              </span>
-              <span className="auth-links-text">
-                New user? <Link to="/signup">Sign up</Link>
+                Already have an account? <Link to="/">Login</Link>
               </span>
             </div>
           </form>
@@ -137,4 +141,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;
